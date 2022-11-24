@@ -1,0 +1,27 @@
+{
+  "name": "moviesapp",
+  "version": "1.0.0",
+  "description": "Web programming framwework project semester 3",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bikaltarung7/moviesapp.git"
+  },
+  "author": "Bikal; Mariela",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bikaltarung7/moviesapp/issues"
+  },
+  "homepage": "https://github.com/bikaltarung7/moviesapp#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-handlebars": "^6.0.6",
+    "express-validator": "^6.14.2",
+    "mongoose": "^6.7.3"
+  }
+}
