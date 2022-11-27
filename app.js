@@ -35,4 +35,21 @@ app.post('/api/movies', (req, res) => {
         })
 });
 
+// route to get all the movies
+app.get('/api/movies', (req, res) => {
+    // later to be extracted from the request body
+    let page = 1
+    let perPage = 5
+    let title = null
+    db.getAllMovies(page, perPage, title)
+        .then(movies => {
+            console.log(movies);
+            res.send(movies);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).send('Error Occured')
+        })
+})
+
 app.listen(3000);
