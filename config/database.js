@@ -11,3 +11,15 @@ exports.initialize = async function (url) {
         throw Error(err);
     }
 }
+
+// method to add a new movie
+// takes a movie object as parameter
+exports.addNewMovie = async function (movieData) {
+    try {
+        let movie = await Movie.create(movieData);
+        return movie._id;
+    }
+    catch (err) {
+        throw Error(err);
+    }
+}
