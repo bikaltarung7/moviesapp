@@ -43,13 +43,25 @@ app.get('/api/movies', (req, res) => {
     let title = null
     db.getAllMovies(page, perPage, title)
         .then(movies => {
-            console.log(movies);
             res.send(movies);
         })
         .catch(err => {
             console.log(err);
             res.status(500).send('Error Occured')
         })
+})
+
+// route to get movie by id
+app.get('/api/movies/:id', (req, res) => {
+    let movieId = req.params.id;
+    db.getMovieById(movieId)
+        .then(movie => {
+            res.json(movie);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).send('Error Occured');
+        });
 })
 
 app.listen(3000);
