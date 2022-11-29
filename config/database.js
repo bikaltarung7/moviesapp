@@ -9,7 +9,7 @@ exports.initialize = async function (url) {
         await mongoose.connect(uri);
         return;
     } catch (err) {
-        throw Error(err);
+        throw err;
     }
 }
 
@@ -21,7 +21,7 @@ exports.addNewMovie = async function (movieData) {
         return movie._id;
     }
     catch (err) {
-        throw Error(err);
+        throw err;
     }
 }
 
@@ -35,19 +35,20 @@ exports.getAllMovies = function (page, perPage, title) {
 
         // check if needs filtering by title
         if (title) {
+            // use regex to include partial title matches
             query = query.where({ title: { $regex: '.*' + title + '.*' } })
         }
 
         // query execution
         query.sort('_id')                   // sort by id
-            .skip((perPage - 1) * page)    // skip pages 
+            .skip((page - 1) * perPage)    // skip pages 
             .limit(perPage)                 // select only perPage number of records
             .exec()                         // execute the query
             .then((movies) => {             // get movies 
                 resolve(movies);            // resolve the promise
             })
             .catch((err) => {
-                reject(new Error(err));                // reject the promise on error
+                reject(err);                // reject the promise on error
             })
     });
 }
@@ -81,13 +82,23 @@ exports.getAllMovies = async function (page, perPage, title) {
 exports.getMovieById = function (id) {
     return new Promise((resolve, reject) => {
         // check if provided id is a valid movie id or not
-        if (!mongoose.Types.ObjectId.isValid(id))
-            reject(new Error('Not a valid id', 422));
+        if (!mongoose.Types.ObjectId.isValid(id)){
+            var err = new Error("Not a valid id");
+            err.name = "Invalid_ID"
+            reject(err);
+        }
 
         // find the movie by id
         Movie.findById(id, (err, movie) => {
             if (err)
-                reject(new Error(err))
+                reject(err)
+
+            if (movie == null){
+                var err = new Error("Data not found");
+                err.name = "Not_Found"
+                reject(err);
+            }
+                
             resolve(movie);
         });
     });
@@ -105,7 +116,7 @@ exports.updateMovieById = function (id, data) {
         // find the movie by id and update
         Movie.findByIdAndUpdate(id, data, (err, movie) => {
             if (err)
-                reject(new Error(err));
+                reject(err);
             resolve(movie);
         });
     });

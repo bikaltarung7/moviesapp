@@ -1,8 +1,10 @@
 const express = require('express');
 
 const db = require('./config/database');
-var Movie = require('./models/movie');
+const mapper = require('./mapper.js')
 var app = express()
+
+app.use(express.urlencoded({ extended: true }));
 
 // initialize the database connection
 db.initialize()
@@ -14,40 +16,35 @@ db.initialize()
         process.exit();
     })
 
-
-app.post('/api/movies', (req, res) => {
-    let movie = new Movie({
-        // later to be extracted from request
-        plot: "The Plot",
-        genre: ["Genre A", "Genre B"],
-        runtime: 101
-    });
+// route to add a new movie
+app.post('/api/movies', mapper.mapMovie, (req, res, next) => {
+    let movie = req.body.movie;
 
     // pass the movie to addMovie function
     db.addNewMovie(movie)
         .then((id) => {
             console.log("Movie Added")
             movie._id = id;
-            res.send(movie);
+            res.json(movie);
         })
         .catch(err => {
-            console.log(err);
+            res.status(500).json({ message: err.message });
         })
 });
 
 // route to get all the movies
 app.get('/api/movies', (req, res) => {
     // later to be extracted from the request body
-    let page = 1
-    let perPage = 5
-    let title = null
+    let page = req.query.page || 1
+    let perPage = req.query.perPage || 5
+    let title = req.query.title
+
     db.getAllMovies(page, perPage, title)
         .then(movies => {
             res.send(movies);
         })
         .catch(err => {
-            console.log(err);
-            res.status(500).send('Error Occured')
+            res.status(500).json({ message: err.message })
         })
 })
 
@@ -59,9 +56,47 @@ app.get('/api/movies/:id', (req, res) => {
             res.json(movie);
         })
         .catch(err => {
-            console.log(err);
-            res.status(500).send('Error Occured');
+            if (err.name == "Invalid_ID") {
+                res.status(400).json({ message: err.message });
+                return;
+            }
+
+            if (err.name == "Not_Found") {
+                res.status(404).json({ message: err.message });
+                return
+            }
+            res.status(500).json({ message: err.message });
         });
-})
+});
+
+// route to update a movie by id
+app.put('/api/movies/:id', mapper.mapMovie, (req, res, next) => {
+    let movieId = req.params.id;
+    let movie = req.body.movie;
+
+    db.updateMovieById(movieId, movie)
+        .then(movie => {
+            return db.getMovieById(movie._id)
+        })
+        .then(updatedMovie => {
+            res.json(updatedMovie);
+        })
+        .catch(err => {
+            res.status(500).json({ message: err.message });
+        });
+});
+
+// route to delete a movie by id
+app.delete('/api/movies/:id', (req, res) => {
+    let movieId = req.params.id;
+
+    db.deleteMovieById(movieId)
+        .then(movie => {
+            res.json({message:"Movie deleted successfully"})
+        })
+        .catch(err => {
+            res.status(500).json({ message: err.message });
+        })
+});
 
 app.listen(3000);
