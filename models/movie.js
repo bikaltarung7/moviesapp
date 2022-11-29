@@ -3,15 +3,18 @@ var Schema = mongoose.Schema;
 
 movieSchema = new Schema({
     plot: String,
-    genre: [String],
+    genres: [String],
     runtime: Number,
     cast: [String],
     num_mflix_comments: Number,
+    poster: String,
     title: String,
     fullplot: String,
     countries: [String],
+    languages: [String],
     released: Date,
-    directories: [String],
+    directors: [String],
+    writers: [String],
     rated: String,
     awards: {
         wins: Number,
@@ -27,17 +30,22 @@ movieSchema = new Schema({
     },
     type: String,
     tomatoes: {
-        viewer:{
+        viewer: {
             rating: Number,
             numReviews: Number,
             meter: Number
         },
-        lastupdated: Date
+        dvd: Date,
+        production: String,
+        critic: {
+            rating: Number,
+            numReviews: Number,
+            meter: Number
+        },
+        lastupdated: Date,
+        rotten: Number,
+        fresh: Number
     }
 });
 
-viewerSchema = new Schema({
-    
-})
-
-module.exports = mongoose.model('Movie',movieSchema)
+module.exports = mongoose.model('Movie', movieSchema)
