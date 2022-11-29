@@ -47,7 +47,7 @@ exports.getAllMovies = function (page, perPage, title) {
                 resolve(movies);            // resolve the promise
             })
             .catch((err) => {
-                reject(err);                // reject the promise on error
+                reject(new Error(err));                // reject the promise on error
             })
     });
 }
@@ -77,15 +77,82 @@ exports.getAllMovies = async function (page, perPage, title) {
 */
 
 // funtion to get movie by id
-exports.getMovieById = function(id){
+// returns promise 
+exports.getMovieById = function (id) {
     return new Promise((resolve, reject) => {
-        if(!mongoose.Types.ObjectId.isValid(id))
-            throw Error('Not a valid id');
-            
-        Movie.findById(id,(err, movie)=>{
-            if(err)
-                reject(err)
+        // check if provided id is a valid movie id or not
+        if (!mongoose.Types.ObjectId.isValid(id))
+            reject(new Error('Not a valid id', 422));
+
+        // find the movie by id
+        Movie.findById(id, (err, movie) => {
+            if (err)
+                reject(new Error(err))
             resolve(movie);
         });
     });
 }
+
+// function to update movie
+// takes movie id and data as parameter
+// returns promise
+exports.updateMovieById = function (id, data) {
+    return new Promise((resolve, reject) => {
+        // check if provided id is a valid id or not
+        if (!mongoose.Types.ObjectId.isValid(id))
+            reject(new Error('Not a valid id'));
+
+        // find the movie by id and update
+        Movie.findByIdAndUpdate(id, data, (err, movie) => {
+            if (err)
+                reject(new Error(err));
+            resolve(movie);
+        });
+    });
+}
+
+// //Alternate way using async await
+// exports.updateMovieById = async function (id, data) {
+//     try {
+//         if (!mongoose.Types.ObjectId.isValid(id))
+//             throw Error('Not a valid id');
+
+//         let movie = await Movie.findByIdAndUpdate(id, data).exec();
+//         return movie;
+//     }
+//     catch (err) {
+//         throw Error(err)
+//     }
+// }
+
+// function to delete a movie
+// takes a movie id as parameter
+// returns promise
+exports.deleteMovieById = function (id) {
+    return new Promise((resolve, reject) => {
+        // check if provided id is a valid movie id or not
+        if (!mongoose.Types.ObjectId.isValid(id))
+            reject(new Error('Not a valid id'));
+
+        // find the movie and delete
+        Movie.findByIdAndDelete(id, (err, movie) => {
+            if (err)
+                reject(new Error(err));
+            resolve(movie);
+        });
+    });
+}
+
+//Alternate way using async/await
+// exports.deleteMovieById = async function (id) {
+//     try {
+//         if (!mongoose.Types.ObjectId.isValid(id))
+//             throw Error('Not a valid id');
+
+//         let movie = await Movie.findByIdAndDelete(id).exec();
+//         return movie;
+//     }
+//     catch (err) {
+//         throw Error(err)
+//     }
+// }
