@@ -6,7 +6,7 @@ var Movie = require('../models/movie')
 // function to connect to the database
 exports.initialize = async function (url) {
     try {
-        await mongoose.connect(uri);
+        await mongoose.connect(url);
         return;
     } catch (err) {
         throw err;
@@ -82,7 +82,7 @@ exports.getAllMovies = async function (page, perPage, title) {
 exports.getMovieById = function (id) {
     return new Promise((resolve, reject) => {
         // check if provided id is a valid movie id or not
-        if (!mongoose.Types.ObjectId.isValid(id)){
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             var err = new Error("Not a valid id");
             err.name = "Invalid_ID"
             reject(err);
@@ -93,12 +93,12 @@ exports.getMovieById = function (id) {
             if (err)
                 reject(err)
 
-            if (movie == null){
+            if (movie == null) {
                 var err = new Error("Data not found");
                 err.name = "Not_Found"
                 reject(err);
             }
-                
+
             resolve(movie);
         });
     });

@@ -2,12 +2,25 @@ const express = require('express');
 
 const db = require('./config/database');
 const mapper = require('./mapper.js')
+const dotenv = require('dotenv');
+dotenv.config();
 var app = express()
 
 app.use(express.urlencoded({ extended: true }));
 
+// prepare database url
+const server = process.env.SERVER
+const host = process.env.HOST
+const user = process.env.USER_NAME
+const pwd = process.env.PASSWORD
+const database = process.env.DATABASE
+
+const url = `${server}://${user}:${pwd}@${host}/${database}`
+
+const port = process.env.PORT
+
 // initialize the database connection
-db.initialize()
+db.initialize(url)
     .then(res => {
         console.log('Database connected');
     })
@@ -92,11 +105,11 @@ app.delete('/api/movies/:id', (req, res) => {
 
     db.deleteMovieById(movieId)
         .then(movie => {
-            res.json({message:"Movie deleted successfully"})
+            res.json({ message: "Movie deleted successfully" })
         })
         .catch(err => {
             res.status(500).json({ message: err.message });
         })
 });
 
-app.listen(3000);
+app.listen(port);
