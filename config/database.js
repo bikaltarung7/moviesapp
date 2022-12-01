@@ -1,4 +1,3 @@
-var uri = "mongodb+srv://app_user:gi30ui4BOqGPjsnF@cluster0.dpxuesy.mongodb.net/sample_mflix?retryWrites=true&w=majority"
 var mongoose = require('mongoose');
 const { db } = require('../models/movie');
 var Movie = require('../models/movie')
