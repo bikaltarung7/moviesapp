@@ -39,7 +39,7 @@ exports.getAllMovies = function (page, perPage, title) {
         }
 
         // query execution
-        query.sort('_id')                   // sort by id
+        query.sort('title')                   // sort by movie title
             .skip((page - 1) * perPage)    // skip pages 
             .limit(perPage)                 // select only perPage number of records
             .exec()                         // execute the query
