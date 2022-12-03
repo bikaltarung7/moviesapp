@@ -1,0 +1,52 @@
+<title>Movies</title>
+<div class="container">
+    <form action="/" method="get">
+        <label for="title" class="label">Title</label>
+        <input type="text" id="title" name="title" value="{{this.search.title}}">
+        <label for="page" class="label">Page No.</label>
+        <input type="select" id="page" name="page" value="{{this.search.page}}">
+        <label for="perPage" class="label">Per Page</label>
+        <select id="perPage" name="perPage">
+            <option value="5" {{isSelected 5 this.search.perPage}}>5</option>
+            <option value="10" {{isSelected 10 this.search.perPage}}>10</option>
+            <option value="15" {{isSelected 15 this.search.perPage}}>15</option>
+            <option value="20" {{isSelected 20 this.search.perPage}}>20</option>
+            <option value="30" {{isSelected 30 this.search.perPage}}>30</option>
+            <option value="40" {{isSelected 40 this.search.perPage}}>40</option>
+            <option value="50" {{isSelected 50 this.search.perPage}}>50</option>
+        </select>
+        <button type="submit" class="btn">Search</button>
+    </form>
+</div>
+{{#if movies}}
+<table class="table">
+    <tr>
+        <th>poster</th>
+        <th id="title">Title</th>
+        <th>Director</th>
+        <th id="cast">Cast</th>
+        <th id="year">Year</th>
+        <th>Genre</th>
+        <th>Runtime</th>
+        <th>IMDB Rating</th>
+        <th>Awards</th>
+    </tr>
+
+    {{#each movies}}
+    <tr>
+        <td><img src="{{this.poster}}"></td>
+        <td>{{ this.title }}</td>
+        <td>{{ this.directors }}</td>
+        <td>{{ this.cast }}</td>
+        <td>{{ this.year }}</td>
+        <td>{{ this.genres }}</td>
+        <td>{{ this.runtime }}</td>
+        <td>{{ this.imdb.rating}}</td>
+        <td>{{this.awards.wins}}</td>
+    </tr>
+    {{/each}}
+</table>
+{{/if}}
+{{#unless movies}}
+<h2 id="message">Sorry, no movie found with title "{{this.search.title}}"</h2>
+{{/unless}}
