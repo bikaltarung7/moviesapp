@@ -1,4 +1,3 @@
-var uri = "mongodb+srv://app_user:gi30ui4BOqGPjsnF@cluster0.dpxuesy.mongodb.net/sample_mflix?retryWrites=true&w=majority"
 var mongoose = require('mongoose');
 const { db } = require('../models/movie');
 var Movie = require('../models/movie')
@@ -31,12 +30,12 @@ exports.getAllMovies = function (page, perPage, title) {
     // Return a promise that it will send array or movies
     return new Promise((resolve, reject) => {
         // prepare a general query to find movies
-        var query = Movie.find()
+        var query = Movie.find().lean()
 
         // check if needs filtering by title
         if (title) {
             // use regex to include partial title matches
-            query = query.where({ title: { $regex: '.*' + title + '.*' } })
+            query = query.where({ title: { $regex: '.*' + title + '.*', $options:'i' } })
         }
 
         // query execution

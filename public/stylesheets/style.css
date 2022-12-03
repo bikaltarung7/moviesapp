@@ -1,0 +1,57 @@
+html {
+    background-color: beige;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+body{
+    width: 90%;
+    margin: auto;
+}
+.container {
+    margin: 10px auto;
+}
+
+input#title{
+    width: 300px;
+}
+
+input#page, select#perPage{
+    width: 50px;
+}
+
+.btn {
+    height: 20px;
+    width: 100px;
+    border-radius: 4px;
+}
+
+.table,
+th,
+td {
+    margin: auto;
+    border: 1px solid black;
+}
+
+th,
+td {
+    padding: 0 5px;
+}
+
+td>img {
+    max-height: 200px;
+}
+
+th#title {
+    width: 400px;
+}
+
+th#year {
+    width: 50px;
+}
+
+th#cast {
+    width: 500px;
+}
+
+#message{
+    font-family: 'Courier New', Courier, monospace;
+}
