@@ -172,7 +172,7 @@ app.delete('/api/movies/:id', token.verifyToken, (req, res) => {
 
 // not found route for api
 app.all('/api/*', (req, res) => {
-    res.staus(404).json({ message: "Page not Found" })
+    res.status(404).json({ message: "Page not Found" })
 });
 
 // not found route for browser
