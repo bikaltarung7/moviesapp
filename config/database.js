@@ -1,6 +1,9 @@
 var mongoose = require('mongoose');
 const { db } = require('../models/movie');
-var Movie = require('../models/movie')
+var Movie = require('../models/movie');
+var User = require('../models/user');
+var bcrypt = require('bcrypt');
+const hash = process.env.SECRETKEY;
 
 // function to connect to the database
 exports.initialize = async function (url) {
@@ -35,7 +38,7 @@ exports.getAllMovies = function (page, perPage, title) {
         // check if needs filtering by title
         if (title) {
             // use regex to include partial title matches
-            query = query.where({ title: { $regex: '.*' + title + '.*', $options:'i' } })
+            query = query.where({ title: { $regex: '.*' + title + '.*', $options: 'i' } })
         }
 
         // query execution
@@ -164,5 +167,48 @@ exports.deleteMovieById = function (id) {
 //     }
 //     catch (err) {
 //         throw Error(err)
+//     }
+// }
+
+
+exports.login = function (email, passowrd) {
+    // returns new promise
+    return new Promise((resolve, reject) => {
+        // get the password for given email
+        User.findOne({ email: email })
+            .select('password')
+            .exec()
+            .then((res) => {
+                // if email is not found response will be undefined or null
+                if (res == undefined)
+                    resolve(false);
+
+                bcrypt.compare(passowrd, res.password)
+                    .then(result => {
+                        resolve(result);
+                    });
+            })
+            .catch(err => {
+                reject(err);
+            })
+
+
+    });
+}
+
+// async await method
+// exports.login = async function (email, password) {
+//     try {
+//         let db_pass = await User.findOne()
+//             .where({ email: email })
+//             .select('password');
+
+//         let result = await bcrypt.compare(password, db_pass.password);
+
+//         return result;
+//     }
+//     catch (err) {
+//         console.log(err);
+//         return err;
 //     }
 // }

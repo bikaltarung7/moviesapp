@@ -3,8 +3,9 @@ require('dotenv').config();
 var express = require('express');
 var path = require('path');
 const db = require('./config/database');
-const mapper = require('./mapper.js')
-const exphbs = require('express-handlebars')
+const mapper = require('./mapper.js');
+const exphbs = require('express-handlebars');
+const token = require('./token.js');
 
 var app = express()
 
@@ -16,12 +17,12 @@ app.use(express.static(path.join(__dirname, 'public')))
 // set up handlebar enginge
 const hbs = exphbs.create({
     // custom helper function
-    helpers:{
-        isSelected:(value, request)=>{
-            return value == request ? 'selected' :'';
+    helpers: {
+        isSelected: (value, request) => {
+            return value == request ? 'selected' : '';
         }
     },
-    extname:'hbs'
+    extname: 'hbs'
 });
 
 // set up handlebar template engine
@@ -65,14 +66,35 @@ app.get('/', (req, res) => {
         })
 })
 
+// login route
+app.post('/api/login', (req, res) => {
+    let email = req.body.email;
+    let password = req.body.password;
+
+    db.login(email, password)
+        .then(result => {
+            if (result) {
+                const payload = { email: email }
+                res.json({ message: "Identitiy verified", accessToken: token.getToken(payload) });
+            }
+            else{
+                res.status(401).json({ message: "Login in failed. Invalid email or passowrd." });
+            }
+            return;
+        })
+        .catch(err => {
+            res.status(500).json({message: "Internal Server Error"});
+        })
+
+});
+
 // route to add a new movie
-app.post('/api/movies', mapper.mapMovie, (req, res, next) => {
+app.post('/api/movies', [token.verifyToken, mapper.mapMovie], (req, res, next) => {
     let movie = req.body.movie;
 
     // pass the movie to addMovie function
     db.addNewMovie(movie)
         .then((id) => {
-            console.log("Movie Added")
             movie._id = id;
             res.json(movie);
         })
@@ -119,7 +141,7 @@ app.get('/api/movies/:id', (req, res) => {
 });
 
 // route to update a movie by id
-app.put('/api/movies/:id', mapper.mapMovie, (req, res, next) => {
+app.put('/api/movies/:id', [token.verifyToken, mapper.mapMovie], (req, res, next) => {
     let movieId = req.params.id;
     let movie = req.body.movie;
 
@@ -136,7 +158,7 @@ app.put('/api/movies/:id', mapper.mapMovie, (req, res, next) => {
 });
 
 // route to delete a movie by id
-app.delete('/api/movies/:id', (req, res) => {
+app.delete('/api/movies/:id', token.verifyToken, (req, res) => {
     let movieId = req.params.id;
 
     db.deleteMovieById(movieId)
